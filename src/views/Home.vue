@@ -13,6 +13,7 @@
       </div>
     </section>
     <h4 class="font-weight-bold text-center">发现精彩</h4>
+     <h1>测试git</h1>
     <column-list :list="list"></column-list>
   </div>
 </template>
