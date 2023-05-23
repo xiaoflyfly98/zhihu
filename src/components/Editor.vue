@@ -1,0 +1,87 @@
+<template>
+    <div class="vue-easymde-editor">
+        <textarea ref="textArea"></textarea>
+    </div>
+</template>
+
+<script lang="ts" setup>
+import { defineProps, defineEmits, ref, onMounted, onUnmounted, defineExpose, watch } from 'vue'
+import EasyMDE, { Options } from 'easymde'
+interface EditorProps {
+  modelValue?:string
+  options?:Options
+}
+
+interface EditorEvents {
+  (type: 'update:modelValue', value:string):void
+  (type: 'change', value:string):void
+  (type: 'blur'):void
+}
+
+const props = defineProps<EditorProps>()
+const emit = defineEmits<EditorEvents>()
+const textArea = ref<null | HTMLTextAreaElement>()
+let easyMDEInstance: EasyMDE | null = null
+const innerValue = ref(props.modelValue || '')
+
+watch(() => props.modelValue, (newValue) => {
+  if (easyMDEInstance) {
+    if (newValue === innerValue.value) {
+      easyMDEInstance.value(newValue || '')
+    }
+  }
+})
+onMounted(() => {
+  if (textArea.value) {
+    const config:Options = {
+      ...(props.options || {}),
+      element: textArea.value,
+      initialValue: innerValue.value
+    }
+    easyMDEInstance = new EasyMDE(config)
+
+    easyMDEInstance.codemirror.on('change', () => {
+      if (easyMDEInstance) {
+        const updateValue = easyMDEInstance.value()
+        innerValue.value = updateValue
+        emit('update:modelValue', updateValue)
+        emit('change', updateValue)
+      }
+    })
+    easyMDEInstance.codemirror.on('blur', () => {
+      if (easyMDEInstance) {
+        emit('blur')
+      }
+    })
+  }
+})
+
+onUnmounted(() => {
+  if (easyMDEInstance) {
+    easyMDEInstance.cleanup()
+  }
+  easyMDEInstance = null
+})
+
+const clear = () => {
+  if (easyMDEInstance) {
+    easyMDEInstance.value('')
+  }
+}
+
+const getMDEInstance = () => {
+  return easyMDEInstance
+}
+
+defineExpose({
+  clear,
+  getMDEInstance
+})
+</script>
+
+<style>
+.vue-easymde-editor.is-invalid {
+  border: 1px solid #dc3545;
+}
+
+</style>
