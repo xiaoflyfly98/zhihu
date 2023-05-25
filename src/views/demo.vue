@@ -1,3 +1,3 @@
 <template>
-    123456
+    123
 </template>
