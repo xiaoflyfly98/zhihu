@@ -13,7 +13,6 @@
       </div>
     </section>
     <h4 class="font-weight-bold text-center">发现精彩</h4>
-     <h1>测试git</h1>
     <column-list :list="list"></column-list>
   </div>
 </template>
@@ -24,6 +23,7 @@ import ColumnList from '../components/ColumnList .vue'
 import { GlobalDataProps, imageProps, ResponseType } from '../store'
 import { useStore } from 'vuex'
 import createMessage from '../components/createMessage'
+import { arrToObj, demo } from '../hepler'
 
 export default defineComponent({
   name: 'Home',
@@ -47,6 +47,7 @@ export default defineComponent({
     const onFileUpload = (rawData: ResponseType<imageProps>) => {
       createMessage(`${rawData.data}`, 'success', 2000)
     }
+    console.log(demo)
     return {
       list,
       biggerCloumnLen,
