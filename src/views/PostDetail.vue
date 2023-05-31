@@ -55,6 +55,7 @@ export default defineComponent({
     store.commit('fetchNowPostId', currentId)
     store.dispatch('fetchPost', currentCloumnId)
     const currentPost = computed<PostProps>(() => store.getters.getCurrentPost(currentId))
+    console.log(store.state.post)
     const currentHtml = computed(() => {
       if (currentPost.value && currentPost.value.content) {
         return md.render(currentPost.value.content)

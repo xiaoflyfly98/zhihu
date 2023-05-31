@@ -27,12 +27,12 @@ export interface imageProps {
 
 export interface PostProps {
   id?: string
-  title: string
+  title?: string
   excerpt?:string
   content?: string
   image?: imageProps | string
   createdAt?: string
-  column: string
+  column?: string
   author?:string
 }
 
@@ -68,7 +68,7 @@ export interface GlobalDataProps {
     token:string
     loading: boolean
     columns: ListProps<ColumnProps>
-    posts: PostProps[]
+    posts: ListProps<PostProps>
     post: currentPostProps[]
     user: UserProps
     nowCloumnId: string
@@ -91,7 +91,7 @@ const store = createStore<GlobalDataProps>({
     columns: {},
     nowCloumnId: '', // 判断当前的专栏号
     nowPostId: '', // 判断当前专栏的第几个文章
-    posts: [],
+    posts: {},
     post: [],
     user: { isLogin: false }
   },
@@ -109,7 +109,8 @@ const store = createStore<GlobalDataProps>({
       state.error = errorData
     },
     createPost (state, newPost) {
-      state.posts.push(newPost)
+      state.posts[newPost._id] = newPost
+      // state.posts.push(newPost)
     },
     fetchColumns (state, rawData) {
       state.columns = arrToObj(rawData.data.list)
@@ -118,7 +119,8 @@ const store = createStore<GlobalDataProps>({
       state.columns[rawData.data.list.id] = rawData.data.list
     },
     fetchPosts (state, rawData) {
-      state.posts = rawData.data.list
+      state.posts = arrToObj(rawData.data.list)
+      // state.posts = rawData.data.list
     },
     fetchPost (state, rawData) {
       state.post = rawData.AllList.list
@@ -138,7 +140,6 @@ const store = createStore<GlobalDataProps>({
       state.nowPostId = nowPostId
     },
     deletePost (state) {
-      state.posts = state.posts.filter(post => post.id !== state.nowPostId)
       console.log('删除文章成功', state.posts)
     },
     loginout (state) {
@@ -196,10 +197,11 @@ const store = createStore<GlobalDataProps>({
       // return state.columns.find(c => c.id === id)
     },
     getPostsById: (state) => (cid:string) => {
-      return state.posts.filter(post => post.column === cid)
+      return objToArry(state.posts).filter(post => post.column === cid)
     },
     getCurrentPost: (state) => (cid:string) => {
       return state.post.find(post => post._id === cid)
+      // return state.post.find(post => post._id === cid)
     }
   }
 })
