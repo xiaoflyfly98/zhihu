@@ -23,7 +23,7 @@ import ColumnList from '../components/ColumnList .vue'
 import { GlobalDataProps, imageProps, ResponseType } from '../store'
 import { useStore } from 'vuex'
 import createMessage from '../components/createMessage'
-import { arrToObj, demo } from '../hepler'
+import { arrToObj, demo, objToArry } from '../hepler'
 
 export default defineComponent({
   name: 'Home',
@@ -35,7 +35,8 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch('fetchColumns')
     })
-    const list = computed(() => store.state.columns)
+    const list = computed(() => objToArry(store.state.columns))
+    console.log(list.value)
     const biggerCloumnLen = computed(() => store.getters.biggerCloumnLen)
     const beforeUpLoad = (file:File) => {
       const isJPG = file.type === 'image/jpeg'

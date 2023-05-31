@@ -1,18 +1,18 @@
 interface TestProps {
-  _id: string
+  id: string
   name: string
 }
 
-const testData:TestProps[] = [{ _id: '1', name: 'a' }, { _id: '2', name: 'b' }]
+const testData:TestProps[] = [{ id: '1', name: 'a' }, { id: '2', name: 'b' }]
 const testData2:{[key:string]:TestProps} = {
-  1: { _id: '1', name: 'a' },
-  2: { _id: '2', name: 'b' }
+  1: { id: '1', name: 'a' },
+  2: { id: '2', name: 'b' }
 }
 
-export const arrToObj = < T extends {_id: string } > (arr: Array<T>) => {
+export const arrToObj = < T extends { id: string } > (arr: Array<T>) => {
   return arr.reduce((prev, current) => {
-    if (current._id) {
-      prev[current._id] = current
+    if (current.id) {
+      prev[current.id] = current
     }
     return prev
   }, {} as { [key: string]: T })

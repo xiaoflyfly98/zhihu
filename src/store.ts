@@ -1,5 +1,6 @@
 import { createStore, Commit } from 'vuex'
 import { instance } from './request'
+import { arrToObj, objToArry } from './hepler'
 
 export interface ResponseType<P = object> {
   code: number;
@@ -53,6 +54,10 @@ export interface ColumnProps {
   description: string
 }
 
+interface ListProps<p>{
+  [id: string]: p;
+}
+
 export interface GlobalErrorProps {
   status:boolean
   message?:string
@@ -62,7 +67,7 @@ export interface GlobalDataProps {
     error:GlobalErrorProps
     token:string
     loading: boolean
-    columns: ColumnProps[]
+    columns: ListProps<ColumnProps>
     posts: PostProps[]
     post: currentPostProps[]
     user: UserProps
@@ -83,7 +88,7 @@ const store = createStore<GlobalDataProps>({
     error: { status: false },
     token: localStorage.getItem('token') || '',
     loading: false,
-    columns: [],
+    columns: {},
     nowCloumnId: '', // 判断当前的专栏号
     nowPostId: '', // 判断当前专栏的第几个文章
     posts: [],
@@ -107,10 +112,11 @@ const store = createStore<GlobalDataProps>({
       state.posts.push(newPost)
     },
     fetchColumns (state, rawData) {
-      state.columns = rawData.data.list
+      state.columns = arrToObj(rawData.data.list)
+      console.log(state.columns)
     },
     fetchColumn (state, rawData) {
-      state.columns = [rawData.data.list]
+      state.columns[rawData.data.list.id] = rawData.data.list
     },
     fetchPosts (state, rawData) {
       state.posts = rawData.data.list
@@ -187,7 +193,8 @@ const store = createStore<GlobalDataProps>({
   },
   getters: {
     getCloumnById: (state) => (id:string) => {
-      return state.columns.find(c => c.id === id)
+      return state.columns[id]
+      // return state.columns.find(c => c.id === id)
     },
     getPostsById: (state) => (cid:string) => {
       return state.posts.filter(post => post.column === cid)
