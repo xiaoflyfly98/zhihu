@@ -21,9 +21,3 @@ export const arrToObj = < T extends { id: string } > (arr: Array<T>) => {
 export const objToArry = <T>(obj: {[key: string]: T}) => {
   return Object.keys(obj).map(key => obj[key])
 }
-
-export const demo = arrToObj(testData)
-console.log(demo)
-
-const demo2 = objToArry(testData2)
-console.log(demo2)

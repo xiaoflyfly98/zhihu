@@ -113,7 +113,6 @@ const store = createStore<GlobalDataProps>({
     },
     fetchColumns (state, rawData) {
       state.columns = arrToObj(rawData.data.list)
-      console.log(state.columns)
     },
     fetchColumn (state, rawData) {
       state.columns[rawData.data.list.id] = rawData.data.list
