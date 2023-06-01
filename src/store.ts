@@ -48,10 +48,10 @@ export interface currentPostProps {
 }
 
 export interface ColumnProps {
-  id: string
-  title: string
+  id?: string
+  title?: string
   avatar?: imageProps
-  description: string
+  description?: string
 }
 
 interface ListProps<p>{
@@ -67,8 +67,8 @@ export interface GlobalDataProps {
     error:GlobalErrorProps
     token:string
     loading: boolean
-    columns: ListProps<ColumnProps>
-    posts: ListProps<PostProps>
+    columns: { data: ListProps<ColumnProps>; isLoaded:boolean }
+    posts: { data: ListProps<PostProps>; loadedColumns: string[] }
     post: currentPostProps[]
     user: UserProps
     nowCloumnId: string
@@ -88,10 +88,10 @@ const store = createStore<GlobalDataProps>({
     error: { status: false },
     token: localStorage.getItem('token') || '',
     loading: false,
-    columns: {},
+    columns: { data: {}, isLoaded: false },
     nowCloumnId: '', // 判断当前的专栏号
     nowPostId: '', // 判断当前专栏的第几个文章
-    posts: {},
+    posts: { data: {}, loadedColumns: [] },
     post: [],
     user: { isLogin: false }
   },
@@ -109,17 +109,17 @@ const store = createStore<GlobalDataProps>({
       state.error = errorData
     },
     createPost (state, newPost) {
-      state.posts[newPost._id] = newPost
+      state.posts.data[newPost._id] = newPost
       // state.posts.push(newPost)
     },
     fetchColumns (state, rawData) {
-      state.columns = arrToObj(rawData.data.list)
+      state.columns.data = arrToObj(rawData.data.list)
     },
     fetchColumn (state, rawData) {
-      state.columns[rawData.data.list.id] = rawData.data.list
+      state.columns.data[rawData.data.list.id] = rawData.data.list
     },
     fetchPosts (state, rawData) {
-      state.posts = arrToObj(rawData.data.list)
+      state.posts.data = arrToObj(rawData.data.list)
       // state.posts = rawData.data.list
     },
     fetchPost (state, rawData) {
@@ -193,11 +193,11 @@ const store = createStore<GlobalDataProps>({
   },
   getters: {
     getCloumnById: (state) => (id:string) => {
-      return state.columns[id]
+      return state.columns.data[id]
       // return state.columns.find(c => c.id === id)
     },
     getPostsById: (state) => (cid:string) => {
-      return objToArry(state.posts).filter(post => post.column === cid)
+      return objToArry(state.posts.data).filter(post => post.column === cid)
     },
     getCurrentPost: (state) => (cid:string) => {
       return state.post.find(post => post._id === cid)

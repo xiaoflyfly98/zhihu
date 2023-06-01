@@ -35,7 +35,7 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch('fetchColumns')
     })
-    const list = computed(() => objToArry(store.state.columns))
+    const list = computed(() => objToArry(store.state.columns.data))
     const biggerCloumnLen = computed(() => store.getters.biggerCloumnLen)
     const beforeUpLoad = (file:File) => {
       const isJPG = file.type === 'image/jpeg'
