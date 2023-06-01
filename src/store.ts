@@ -74,9 +74,13 @@ export interface GlobalDataProps {
     nowCloumnId: string
     nowPostId: string
   }
-const getandCommit = async (url:string, mutationName:string, commit:Commit) => {
+const getandCommit = async (url:string, mutationName:string, commit:Commit, extraData?:any) => {
   const { data } = await instance.get(url)
-  commit(mutationName, data)
+  if (extraData) {
+    commit(mutationName, { data, extraData })
+  } else {
+    commit(mutationName, data)
+  }
   return data
 }
 const postandCommit = async (url:string, mutationName:string, commit:Commit, payLoad:any) => {
@@ -114,12 +118,14 @@ const store = createStore<GlobalDataProps>({
     },
     fetchColumns (state, rawData) {
       state.columns.data = arrToObj(rawData.data.list)
+      state.columns.isLoaded = true
     },
     fetchColumn (state, rawData) {
       state.columns.data[rawData.data.list.id] = rawData.data.list
     },
-    fetchPosts (state, rawData) {
+    fetchPosts (state, { data: rawData, extraData: cloumnId }) {
       state.posts.data = arrToObj(rawData.data.list)
+      state.posts.loadedColumns.push(cloumnId)
       // state.posts = rawData.data.list
     },
     fetchPost (state, rawData) {
@@ -152,14 +158,19 @@ const store = createStore<GlobalDataProps>({
     login ({ commit }, payLoad) {
       return postandCommit('/user/login', 'login', commit, payLoad)
     },
-    fetchColumns ({ commit }) {
-      return getandCommit('/columns', 'fetchColumns', commit)
+    fetchColumns ({ state, commit }) {
+      if (!state.columns.isLoaded) {
+        return getandCommit('/columns', 'fetchColumns', commit)
+      }
     },
-    fetchColumn ({ commit }, cid) {
-      return getandCommit(`/column/${cid}`, 'fetchColumn', commit)
+    fetchColumn ({ state, commit }, cid) {
+      if (!state.columns.data[cid]) {
+        return getandCommit(`/column/${cid}`, 'fetchColumn', commit)
+      }
     },
-    fetchPosts ({ commit }, cid) {
-      return getandCommit(`/column/${cid}/post`, 'fetchPosts', commit)
+    fetchPosts ({ state, commit }, cid) {
+      // if (!state.posts.loadedColumns.includes(cid)) {
+      return getandCommit(`/column/${cid}/post`, 'fetchPosts', commit, cid)
     },
     fetchPost ({ commit }, cid) {
       const postAxios = async () => {
@@ -201,7 +212,6 @@ const store = createStore<GlobalDataProps>({
     },
     getCurrentPost: (state) => (cid:string) => {
       return state.post.find(post => post._id === cid)
-      // return state.post.find(post => post._id === cid)
     }
   }
 })
