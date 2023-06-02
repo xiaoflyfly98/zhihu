@@ -23,7 +23,7 @@ import ColumnList from '../components/ColumnList .vue'
 import { GlobalDataProps, imageProps, ResponseType } from '../store'
 import { useStore } from 'vuex'
 import createMessage from '../components/createMessage'
-import { arrToObj, objToArry } from '../hepler'
+import { objToArry } from '../hepler'
 
 export default defineComponent({
   name: 'Home',
