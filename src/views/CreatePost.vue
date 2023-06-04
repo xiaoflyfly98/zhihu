@@ -4,6 +4,7 @@
     <Upload  class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4"
       action="/upload"
       :uploaded="uploadedData"
+      :beforeUpLoad="uploadCheck"
       @file-upload="handleFileUpload"
       >
       <template #default>
@@ -121,9 +122,6 @@ export default defineComponent({
       }
     }
     onMounted(() => {
-      if (editorRef.value) {
-        console.log(editorRef.value.getMDEInstance())
-      }
       if (isEditMode) {
         store.dispatch('fetchPost', route.query.id).then(data => {
           const currentPostId = store.state.nowPostId
@@ -165,7 +163,20 @@ export default defineComponent({
         }
       }
     }
+    // 上传组件检查
+    const uploadCheck = (file:File) => {
+      const isJPG = file.type === 'image/jpeg'
+      console.log('up')
+      if (!isJPG) {
+        createMessage('不是jpeg格式的图片', 'error', 2000)
+      }
+      return isJPG
+    }
 
+    // 上传失败的解决
+    // const onFileUpload = (rawData: ResponseType<imageProps>) => {
+    //   createMessage(`${rawData.data}`, 'success', 2000)
+    // }
     return {
       titleVal,
       titleRules,
@@ -178,7 +189,8 @@ export default defineComponent({
       editorOptions,
       editorRef,
       ediotrStatus,
-      checkEditor
+      checkEditor,
+      uploadCheck
     }
   }
 })

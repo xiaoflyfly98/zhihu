@@ -26,9 +26,8 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted } from 'vue'
 import ColumnList from '../components/ColumnList .vue'
-import { GlobalDataProps, imageProps, ResponseType } from '../store'
+import { GlobalDataProps } from '../store'
 import { useStore } from 'vuex'
-import createMessage from '../components/createMessage'
 import { objToArry } from '../hepler'
 import useLoadMore from '../hooks/useLoadMore'
 
@@ -46,21 +45,9 @@ export default defineComponent({
     })
     const list = computed(() => objToArry(store.state.columns.data))
     const { loadMorePage, isLastPage } = useLoadMore('fetchColumns', total, { pageSize: 3, currentPage: (currentPage.value ? currentPage.value + 1 : 2) })
-    const beforeUpLoad = (file:File) => {
-      const isJPG = file.type === 'image/jpeg'
-      if (!isJPG) {
-        createMessage('不是图片类型文件', 'error', 2000)
-      }
-      return isJPG
-    }
-    const onFileUpload = (rawData: ResponseType<imageProps>) => {
-      createMessage(`${rawData.data}`, 'success', 2000)
-    }
 
     return {
       list,
-      beforeUpLoad,
-      onFileUpload,
       total,
       loadMorePage,
       isLastPage
