@@ -1,7 +1,7 @@
-interface TestProps {
-  id: string
-  name: string
-}
+// interface TestProps {
+//   id: string
+//   name: string
+// }
 
 // const testData:TestProps[] = [{ id: '1', name: 'a' }, { id: '2', name: 'b' }]
 // const testData2:{[key:string]:TestProps} = {

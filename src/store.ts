@@ -67,7 +67,7 @@ export interface GlobalDataProps {
     error:GlobalErrorProps
     token:string
     loading: boolean
-    columns: { data: ListProps<ColumnProps>; isLoaded:boolean }
+    columns: { data: ListProps<ColumnProps>; isLoaded:boolean; total:number }
     posts: { data: ListProps<PostProps>; loadedColumns: string[] }
     post: currentPostProps[]
     user: UserProps
@@ -92,7 +92,7 @@ const store = createStore<GlobalDataProps>({
     error: { status: false },
     token: localStorage.getItem('token') || '',
     loading: false,
-    columns: { data: {}, isLoaded: false },
+    columns: { data: {}, isLoaded: false, total: 0 },
     nowCloumnId: '', // 判断当前的专栏号
     nowPostId: '', // 判断当前专栏的第几个文章
     posts: { data: {}, loadedColumns: [] },
@@ -104,8 +104,7 @@ const store = createStore<GlobalDataProps>({
     //   state.user = { ...state.user, isLogin: true, name: 'feifei' }
     // },
     login (state, rawData) {
-      state.token = rawData.data.token
-      const token = state.token
+      const { token } = rawData.data
       localStorage.setItem('token', token)
       instance.defaults.headers.common.Authorization = `name ${token}`
     },
@@ -117,8 +116,16 @@ const store = createStore<GlobalDataProps>({
       // state.posts.push(newPost)
     },
     fetchColumns (state, rawData) {
-      state.columns.data = arrToObj(rawData.data.list)
-      state.columns.isLoaded = true
+      const { data } = state.columns
+      const { list, count } = rawData.page
+      state.columns = {
+        data: { ...data, ...arrToObj(list) },
+        isLoaded: true,
+        total: count
+      }
+      console.log(state.columns)
+      // state.columns.data = arrToObj(rawData.data.list)
+      // state.columns.isLoaded = true
     },
     fetchColumn (state, rawData) {
       state.columns.data[rawData.data.list.id] = rawData.data.list
@@ -158,10 +165,16 @@ const store = createStore<GlobalDataProps>({
     login ({ commit }, payLoad) {
       return postandCommit('/user/login', 'login', commit, payLoad)
     },
-    fetchColumns ({ state, commit }) {
-      if (!state.columns.isLoaded) {
-        return getandCommit('/columns', 'fetchColumns', commit)
+    fetchColumns ({ state, commit }, params) {
+      const { currentPage = 1, pageSize = 3 } = params
+      const postAxios = async () => {
+        const respData = await instance.post(`/api/currentPage=${currentPage}&pageSize=${pageSize}`, params)
+        const data = respData.data
+        commit('fetchColumns', data)
+        return data
       }
+      return postAxios()
+      // return postandCommit(`/api/currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchColumns', commit, params)
     },
     fetchColumn ({ state, commit }, cid) {
       if (!state.columns.data[cid]) {

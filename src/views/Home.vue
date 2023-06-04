@@ -1,7 +1,6 @@
 <template>
   <div class="home-page">
     <section class="py-5 text-center container">
-      <h2>{{biggerCloumnLen}}</h2>
       <div class="row py-lg-5">
         <div class="col-lg-6 col-md-8 mx-auto">
           <img src="../assets/callout.svg" alt="callout" class="w-50"/>
@@ -14,6 +13,13 @@
     </section>
     <h4 class="font-weight-bold text-center">发现精彩</h4>
     <column-list :list="list"></column-list>
+    <button
+      class="btn btn-outline-primary mt-2 mb-5 mx-auto btn-block w-25 d-block"
+       @click="loadMorePage" v-if="!isLastPage"
+    >
+      加载更多
+    </button>
+    <h5 class="row py-lg-5 justify-content-center" v-if="isLastPage">已经到底了，没有其它数据了......</h5>
   </div>
 </template>
 
@@ -24,6 +30,7 @@ import { GlobalDataProps, imageProps, ResponseType } from '../store'
 import { useStore } from 'vuex'
 import createMessage from '../components/createMessage'
 import { objToArry } from '../hepler'
+import useLoadMore from '../hooks/useLoadMore'
 
 export default defineComponent({
   name: 'Home',
@@ -32,11 +39,12 @@ export default defineComponent({
   },
   setup () {
     const store = useStore<GlobalDataProps>()
+    const total = computed(() => { return store.state.columns.total })
     onMounted(() => {
-      store.dispatch('fetchColumns')
+      store.dispatch('fetchColumns', { pageSize: 3, currentPage: 1 })
     })
     const list = computed(() => objToArry(store.state.columns.data))
-    const biggerCloumnLen = computed(() => store.getters.biggerCloumnLen)
+    const { loadMorePage, isLastPage } = useLoadMore('fetchColumns', total, { pageSize: 3, currentPage: 2 })
     const beforeUpLoad = (file:File) => {
       const isJPG = file.type === 'image/jpeg'
       if (!isJPG) {
@@ -50,9 +58,11 @@ export default defineComponent({
 
     return {
       list,
-      biggerCloumnLen,
       beforeUpLoad,
-      onFileUpload
+      onFileUpload,
+      total,
+      loadMorePage,
+      isLastPage
     }
   }
 })

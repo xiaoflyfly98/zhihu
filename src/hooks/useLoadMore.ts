@@ -7,7 +7,7 @@ interface LoadParam {
 }
 
 const useLoadMore = (actionName:string, total:ComputedRef<number>,
-  params:LoadParam = { currentPage: 2, pageSize: 3 }) => {
+  params:LoadParam = { currentPage: 1, pageSize: 3 }) => {
   const store = useStore()
   const currentPage = ref(params.currentPage)
   const requestParams = computed(() => ({
@@ -15,7 +15,7 @@ const useLoadMore = (actionName:string, total:ComputedRef<number>,
     pageSize: params.pageSize
   }))
   const loadMorePage = () => {
-    store.dispatch(actionName, requestParams).then(() => {
+    store.dispatch(actionName, requestParams.value).then(() => {
       currentPage.value++
     })
   }

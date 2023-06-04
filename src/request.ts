@@ -23,3 +23,7 @@ instance.interceptors.response.use(config => {
     return Promise.reject(errorData)
   }
 })
+// instance.post('/api/currentPage=3&pageSize=3', {
+//   currentPage: 3,
+//   pageSize: 3
+// }).then(data => console.log(data.data.page.list))
