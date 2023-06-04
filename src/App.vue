@@ -6,7 +6,7 @@
    <footer class="text-center py-4 text-secondary bg-light mt-6">
       <small>
         <ul class="list-inline mb-0">
-          <li class="list-inline-item">© 2020 者也专栏</li>
+          <li class="list-inline-item">© 2023 知乎专栏</li>
           <li class="list-inline-item">课程</li>
           <li class="list-inline-item">文档</li>
           <li class="list-inline-item">联系</li>
@@ -24,8 +24,7 @@ import GlobalHeader from './components/GlobalHeader.vue'
 import Loader from './components/Loader.vue'
 import { GlobalDataProps } from './store'
 import createMessage from './components/createMessage'
-// import Home from './views/Home.vue'
-// import Login from './views/Login.vue'
+
 import { useStore } from 'vuex'
 
 export default defineComponent({

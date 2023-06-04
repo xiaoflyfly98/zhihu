@@ -10,7 +10,9 @@
         <DropDown :title="`你好${user.nickName}`" >
           <DropDownitem><router-link to="/CreatePost" class="dropdown-item">新建文章</router-link></DropDownitem>
           <DropDownitem disabled><a href="#" class="dropdown-item">编辑资料</a></DropDownitem>
-          <DropDownitem ><a href="#" class="dropdown-item">退出登录</a></DropDownitem>
+          <DropDownitem @click="logup">
+            <a href="#" class="dropdown-item" >退出登录</a>
+          </DropDownitem>
         </DropDown>
       </li>
       </ul>
@@ -22,6 +24,8 @@ import { defineComponent, PropType } from 'vue'
 import DropDown from './DropDown.vue'
 import DropDownitem from './DropdownItem.vue'
 import { UserProps } from '../store'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'GlobalHeader',
@@ -33,6 +37,18 @@ export default defineComponent({
     user: {
       type: Object as PropType<UserProps>,
       required: true
+    }
+  },
+  setup () {
+    const store = useStore()
+    const router = useRouter()
+    const logup = () => {
+      localStorage.removeItem('token')
+      store.state.user.isLogin = false
+      router.push('/')
+    }
+    return {
+      logup
     }
   }
 })

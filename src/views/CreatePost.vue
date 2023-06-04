@@ -166,7 +166,6 @@ export default defineComponent({
     // 上传组件检查
     const uploadCheck = (file:File) => {
       const isJPG = file.type === 'image/jpeg'
-      console.log('up')
       if (!isJPG) {
         createMessage('不是jpeg格式的图片', 'error', 2000)
       }
