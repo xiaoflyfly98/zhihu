@@ -67,7 +67,7 @@ export interface GlobalDataProps {
     error:GlobalErrorProps
     token:string
     loading: boolean
-    columns: { data: ListProps<ColumnProps>; isLoaded:boolean; total:number }
+    columns: { data: ListProps<ColumnProps>; currentPage:number ; total:number }
     posts: { data: ListProps<PostProps>; loadedColumns: string[] }
     post: currentPostProps[]
     user: UserProps
@@ -92,7 +92,7 @@ const store = createStore<GlobalDataProps>({
     error: { status: false },
     token: localStorage.getItem('token') || '',
     loading: false,
-    columns: { data: {}, isLoaded: false, total: 0 },
+    columns: { data: {}, currentPage: 0, total: 0 },
     nowCloumnId: '', // 判断当前的专栏号
     nowPostId: '', // 判断当前专栏的第几个文章
     posts: { data: {}, loadedColumns: [] },
@@ -117,10 +117,10 @@ const store = createStore<GlobalDataProps>({
     },
     fetchColumns (state, rawData) {
       const { data } = state.columns
-      const { list, count } = rawData.page
+      const { list, count, currentPage } = rawData.page
       state.columns = {
         data: { ...data, ...arrToObj(list) },
-        isLoaded: true,
+        currentPage: currentPage * 1,
         total: count
       }
       console.log(state.columns)
@@ -167,13 +167,15 @@ const store = createStore<GlobalDataProps>({
     },
     fetchColumns ({ state, commit }, params) {
       const { currentPage = 1, pageSize = 3 } = params
-      const postAxios = async () => {
-        const respData = await instance.post(`/api/currentPage=${currentPage}&pageSize=${pageSize}`, params)
-        const data = respData.data
-        commit('fetchColumns', data)
-        return data
+      if (state.columns.currentPage < currentPage) {
+        const postAxios = async () => {
+          const respData = await instance.post(`/api/currentPage=${currentPage}&pageSize=${pageSize}`, params)
+          const data = respData.data
+          commit('fetchColumns', data)
+          return data
+        }
+        return postAxios()
       }
-      return postAxios()
       // return postandCommit(`/api/currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchColumns', commit, params)
     },
     fetchColumn ({ state, commit }, cid) {

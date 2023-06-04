@@ -40,11 +40,12 @@ export default defineComponent({
   setup () {
     const store = useStore<GlobalDataProps>()
     const total = computed(() => { return store.state.columns.total })
+    const currentPage = computed(() => { return store.state.columns.currentPage })
     onMounted(() => {
       store.dispatch('fetchColumns', { pageSize: 3, currentPage: 1 })
     })
     const list = computed(() => objToArry(store.state.columns.data))
-    const { loadMorePage, isLastPage } = useLoadMore('fetchColumns', total, { pageSize: 3, currentPage: 2 })
+    const { loadMorePage, isLastPage } = useLoadMore('fetchColumns', total, { pageSize: 3, currentPage: (currentPage.value ? currentPage.value + 1 : 2) })
     const beforeUpLoad = (file:File) => {
       const isJPG = file.type === 'image/jpeg'
       if (!isJPG) {
