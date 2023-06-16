@@ -123,7 +123,6 @@ const store = createStore<GlobalDataProps>({
         currentPage: currentPage * 1,
         total: count
       }
-      console.log(state.columns)
       // state.columns.data = arrToObj(rawData.data.list)
       // state.columns.isLoaded = true
     },
