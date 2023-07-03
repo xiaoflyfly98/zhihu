@@ -14,6 +14,7 @@
    <div class="mb-3">
       <label class="form-label">密码</label>
       <Validate-Input
+      type="password"
       :rules="passWordRules"
       v-model="passwordlVal"
       placeholder="请输入密码"/>

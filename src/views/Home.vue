@@ -40,7 +40,6 @@ export default defineComponent({
   },
   setup () {
     const store = useStore<GlobalDataProps>()
-    console.log(store.state.columns)
     const total = computed(() => { return store.state.columns.total })
     const currentPage = computed(() => { return store.state.columns.currentPage })
     onMounted(() => {
